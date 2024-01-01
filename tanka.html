@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Web Tanka Drafter | Shadow's Den</title>
+        <link rel="stylesheet" href="static\css\styles.css">
+        <link rel="icon" type="image/x-icon" href="/images/favicon.jpg">
+    </head>
+    <body>
+        <header>
+            <h1>Web Tanka Drafter</h1>
+        </header>
+        <div class = "stanza-background-container">
+                <div class = "explainer">
+                    <div>
+                        <h2>What is a tanka?</h2>
+                        <p><i>
+                            A Tanka is a form of traditional Japanese poetry that's the Haiku's bigger brother. 
+                            The format of a Tanka typically comprises 31 syllables, 
+                            distributed across the lines in a 5-7-5-7-7 pattern. 
+                            This structured format allows Tanka to convey rich emotions, vivid imagery, 
+                            and contemplative thoughts within its limited length, 
+                            complexity within an elegant simplicty.
+                        </i> </p>
+                    </div>
+                    <div>
+                        <h2>So how does this help?</h2>
+                        <p><i>
+                            In order to keep the poet honest, this website provides live syllable counting. 
+                            You may also choose to change words to their synonym if that would be a better fit! 
+
+                        </i> </p>
+                        <p><i>
+                           Selecting words shows a pop up of rhymes to inspire you and synonyms in case you find you've run into a syllable issue
+
+                        </i> </p>
+                    </div>
+                    <div class = "settings">
+                        <h3>Settings</h3>
+                        <span class = "sub_settings">
+                            <input type ="checkbox" id ="lineToggle"></input>
+                            <label for = "lineToggle">Line number</label>
+                        </span>
+                    </div>
+                </div>
+                <div class = "stanza">
+                    <p> Poem Title:</p>
+                    <input type = "text" class = "line" placeholder = "Title here"></input> 
+                    <p>Poet:</p>
+                    <input type = "text" class = "line"value = "By:"></input> 
+                </div>
+                <div class = "stanza" id = "stanza">
+                    <input placeholder="5 introductory syllables here" 
+                           type = "text"
+                           class = "line"
+                           oninput = "handleChange(this)"
+                           />
+                        <span class="syllable-count"></span><br>
+                    <input placeholder="7 syllables here"
+                           type = "text"
+                           class = "line"
+                           oninput = "handleChange(this)"
+                           />
+                        <span class="syllable-count"></span><br>
+                    <input placeholder="5 dramatic syllables here" 
+                           type = "text" 
+                           class = "line"
+                           oninput = "handleChange(this)"
+                           />
+                        <span class="syllable-count"></span><br>
+                    <input placeholder="7 dramatic syllables here" 
+                           type = "text" 
+                           class = "line"
+                           oninput = "handleChange(this)"
+                           />
+                        <span class="syllable-count"></span><br>
+                    <input placeholder="7 specail syllables here" 
+                           type = "text" 
+                           class = "line"
+                           oninput = "handleChange(this)"
+                           />
+                        <span class="syllable-count"></span><br>
+                </div>
+                <div class = "button-holder">
+
+                    <button onclick="Copy()" class = "generateButton"> Copy Poem! </button>
+                    <button onclick="DownloadFile()" class = "generateButton"> Download Poem! </button>
+                    <br><br>
+                    <div class = "button-holder">
+                    <textarea placeholder = "Copy from here" readonly id = "EditArea"> </textarea>
+                    </div>
+                </div> 
+        </div>
+
+        <script src = "static\js\main.js">
+           
+        </script>
+    </body>
+</html>
