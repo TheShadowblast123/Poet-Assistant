@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Web Pantoum Drafter | Shadow's Den</title>
+
+        <link rel="stylesheet" href="static\css\styles.css">
+        <link rel="icon" type="image/x-icon" href="/images/favicon.jpg">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.10/htmx.min.js"></script>
+    </head>
+    <body>
+        <header>
+            <h1>Web Pantoum Drafter</h1>
+
+        </header>
+
+        <div class = "stanza-background-container">
+            <div class = "explainer">
+                <div>
+                    <h3>What is a pantoum?</h3>
+                    <p><i>A pantoum is a poetic form with repetitive quatrains originating in Malaysia and is known for its rhythmic and reflective qualities. The even lines of each stanza become the odd lines of the next, until the very end where the first odd lines repeat.</i> </p>
+                </div>
+                <div>
+                    <h3>That sounds cool! But isn't it hard?</h3>
+                    <p><i>The repeating nature of the poem is difficult to tame, but very beautiful when executed well, and that's the point of event drafter! 
+                        Simply start drafting your poem and the lines will show up where they're supposed to go, so you only have to think of the poem as a whole!</i> </p>
+                </div>
+
+            </div>
+            <div class = "settings">
+                <h3>Settings</h3>
+                <span class = "sub_settings">
+                    <input type ="checkbox" id = "editToggle" onclick="livePantoumToggler()" checked = "true"></input>
+                    <label for = "editToggle">Live Automatic input</label>
+                </span>
+                <span class = "sub_settings">
+                    <input type ="checkbox" id = "pantoumEnd" onclick="togglePantoumEnd()"></input>
+                    <label for = "pantoumEnd">End on First Line</label>
+                </span>
+                <span class = "sub_settings" id ="stanza-count-holder">
+                    <button hx-get="/add-pantoum"  hx-vals='{"stanzas": 4}' hx-swap="outerHTML"  hx-target="#stanza-count-holder" onclick="addPantoumStanza()">Add Stanza</button>
+                    <button hx-get="/sub-pantoum"  hx-vals='{"stanzas": 4}'  hx-swap="outerHTML"  hx-target="#stanza-count-holder" onclick="subPantoumStanza()">Remove Stanza</button>
+                </span>
+            </div>
+            <div class = "stanza" id = "stanza">
+                <p> Poem Title:</p>
+                <input type = "text" class = "line" placeholder = "Title here"></input> 
+                <p>Poet:</p>
+                <input type = "text" class = "line"value = "By:"></input> 
+            </div>
+            <div id = "stanza-holder">
+                <div class = "stanza" id = "stanza">
+                    <input placeholder="1" type = "text" class = "line_1 line stanza_line" oninput = "pairSync(event), handleChange(this)"></input><span class="syllable-count"></span><br>
+                    <input placeholder="2" type = "text" class = "line_2 line stanza_line" oninput = "pairSync(event), handleChange(this)"></input><span class="syllable-count"></span><br>
+                    <input placeholder="3" type = "text" class = "line_3 line stanza_line" oninput = "pairSync(event), handleChange(this)"></input><span class="syllable-count"></span><br>
+                    <input placeholder="4" type = "text" class = "line_4 line stanza_line" oninput = "pairSync(event), handleChange(this)"></input><span class="syllable-count"></span><br>
+                </div>
+                <div class = "stanza" id = "stanza">
+                    <input placeholder="2" type = "text" class = "line_2 line stanza_line" oninput = "pairSync(event), handleChange(this)"></input><span class="syllable-count"></span><br>
+                    <input placeholder="5" type = "text" class = "line_5 line stanza_line" oninput = "pairSync(event), handleChange(this)"></input><span class="syllable-count"></span><br>
+                    <input placeholder="4" type = "text" class = "line_4 line stanza_line" oninput = "pairSync(event), handleChange(this)"></input><span class="syllable-count"></span><br>
+                    <input placeholder="6" type = "text" class = "line_6 line stanza_line" oninput = "pairSync(event), handleChange(this)"></input><span class="syllable-count"></span><br>
+                </div>
+                <div class = "stanza" id = "stanza">
+                    <input placeholder="5" type = "text" class = "line_5 line stanza_line" oninput = "pairSync(event), handleChange(this)"></input><span class="syllable-count"></span><br>
+                    <input placeholder="7" type = "text" class = "line_7 line stanza_line" oninput = "pairSync(event), handleChange(this)"></input><span class="syllable-count"></span><br>
+                    <input placeholder="6" type = "text" class = "line_6 line stanza_line" oninput = "pairSync(event), handleChange(this)"></input><span class="syllable-count"></span><br>
+                    <input placeholder="8" type = "text" class = "line_8 line stanza_line" oninput = "pairSync(event), handleChange(this)"></input><span class="syllable-count"></span><br>
+                </div>
+                <div class = "stanza" id = "stanza">
+                    <input placeholder="7" type = "text" class = "line_7 line stanza_line" oninput = "pairSync(event), handleChange(this)"></input><span class="syllable-count"></span><br>
+                    <input placeholder="1" type = "text" class = "line_1 line stanza_line" oninput = "pairSync(event), handleChange(this)"></input><span class="syllable-count"></span><br>
+                    <input placeholder="8" type = "text" class = "line_8 line stanza_line" oninput = "pairSync(event), handleChange(this)"></input><span class="syllable-count"></span><br>
+                    <input placeholder="3" type = "text" class = "line_3 line stanza_line" oninput = "pairSync(event), handleChange(this)"></input><span class="syllable-count"></span><br>
+                </div>
+            </div>
+            <div class = "button-holder">
+                <button onclick="DownloadFile()" class = "generateButton"> Download Poem! </button>
+                <button onclick="Copy()" class = "generateButton"> Copy Poem! </button>
+            </div> 
+            
+        </div>
+        <script src = "static\js\main.js">
+        </script>
+    </body>
+</html>
