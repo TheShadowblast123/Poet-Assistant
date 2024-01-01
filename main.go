@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-var indexTemplate = template.Must(template.ParseFiles("templates/poems.html"))
+var indexTemplate = template.Must(template.ParseFiles("templates/index.html"))
 var villanelleTemplate = template.Must(template.ParseFiles("templates/villanelle.html"))
 var tankaTemplate = template.Must(template.ParseFiles("templates/tanka.html"))
 var sestinaTemplate = template.Must(template.ParseFiles("templates/sestina.html"))
@@ -199,7 +199,7 @@ func setSyllables(w http.ResponseWriter, r *http.Request) {
 
 }
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	indexTemplate.ExecuteTemplate(w, "poems.html", nil)
+	indexTemplate.ExecuteTemplate(w, "index.html", nil)
 }
 func villanelleHandler(w http.ResponseWriter, r *http.Request) {
 	villanelleTemplate.ExecuteTemplate(w, "villanelle.html", nil)
