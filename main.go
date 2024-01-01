@@ -237,5 +237,5 @@ func main() {
 	http.HandleFunc("/sub-pantoum", handlePantoumSubtract)
 	http.HandleFunc("/check-rhymes-nelle", checkVillaNelleRhymes)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	http.ListenAndServe("127.0.0.1:8000", nil)
+	http.ListenAndServe(":8000", nil)
 }
