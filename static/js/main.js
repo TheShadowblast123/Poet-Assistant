@@ -327,7 +327,7 @@ function CountWordSyllables(w = ''){
 }
 function CountSentenceSyllables(s ='') {
     //probably a go problem
-    const wordsOnly = /\S+/g;
+    const wordsOnly = /\w+/g;
     const hold = s.match(wordsOnly)
     let sum = 0;
     if(hold)

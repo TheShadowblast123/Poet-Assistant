@@ -6,7 +6,6 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 var indexTemplate = template.Must(template.ParseFiles("templates/index.html"))
@@ -96,7 +95,7 @@ func checkVillaNelleRhymes(w http.ResponseWriter, r *http.Request) {
 				w.Write([]byte(output))
 				return
 			}
-			if !doesRhyme(aOne, aTwo) {
+			if !doesRhyme(aOne, aTwo) && !deepDoesRhyme(aOne, aTwo) {
 				if subject == aOne {
 					output = fmt.Sprintf(`<div> </p> There, might be a spelling error, or a mistake but please double check this rhymes with %s </p> </br></div>`, aTwo)
 					w.Write([]byte(output))
@@ -133,7 +132,7 @@ func checkVillaNelleRhymes(w http.ResponseWriter, r *http.Request) {
 			return
 		} else {
 			for _, b := range bArr {
-				if doesRhyme(b, subject) {
+				if doesRhyme(b, subject) || deepDoesRhyme(b, subject) {
 					w.Write([]byte(output))
 					return
 				}
@@ -155,7 +154,7 @@ func checkVillaNelleRhymes(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		for _, a := range aArr {
-			if doesRhyme(a, subject) {
+			if doesRhyme(a, subject) || deepDoesRhyme(a, subject) {
 				w.Write([]byte(output))
 				return
 			}
@@ -168,7 +167,7 @@ func checkVillaNelleRhymes(w http.ResponseWriter, r *http.Request) {
 			if temp == "" {
 				continue
 			}
-			if doesRhyme(temp, subject) {
+			if doesRhyme(temp, subject) || deepDoesRhyme(temp, subject) {
 				w.Write([]byte(output))
 				return
 			}
@@ -181,19 +180,9 @@ func checkVillaNelleRhymes(w http.ResponseWriter, r *http.Request) {
 }
 func setSyllables(w http.ResponseWriter, r *http.Request) {
 	temp := r.PostFormValue("line")
-	words := strings.Split(temp, " ")
-	result := 0
-	for _, w := range words {
-
-		x := syllableCount(removePunctuationFromWord(w))
-		if x > 0 {
-			result += x
-		}
-	}
+	result := syllableCount(removePunctuationFromWord(temp))
 	data := strconv.Itoa(result) + " Syllables"
-	hxTarget := r.Header.Get("HX-Target")
-	className := strings.TrimPrefix(hxTarget, ".")
-	htmlContent := fmt.Sprintf(`<span class="%s">%s</span>`, className, data)
+	htmlContent := fmt.Sprintf(`<span class="syllable-count">%s</span>`, data)
 
 	w.Write([]byte(htmlContent))
 
@@ -223,6 +212,7 @@ func sonnetHandler(w http.ResponseWriter, r *http.Request) {
 	sonnetTemplate.ExecuteTemplate(w, "sonnet.html", nil)
 }
 func main() {
+	fmt.Println(loadJSONData())
 	fmt.Print("Running")
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/pantoum", pantoumHandler)
@@ -237,5 +227,5 @@ func main() {
 	http.HandleFunc("/sub-pantoum", handlePantoumSubtract)
 	http.HandleFunc("/check-rhymes-nelle", checkVillaNelleRhymes)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	http.ListenAndServe(":8000", nil)
+	http.ListenAndServe("localhost:8000", nil)
 }

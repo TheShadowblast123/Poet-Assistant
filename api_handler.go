@@ -5,16 +5,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"regexp"
 	"strings"
 	"unicode"
-)
-
-type JsonReturn int
-
-const (
-	rhymes JsonReturn = iota
-	syllables
-	synonyms
 )
 
 type Stanza struct {
@@ -29,26 +23,257 @@ type JsonOrError struct {
 	e error
 }
 
-const rhymeUrl string = `https://api.datamuse.com/words?rel_rhy=`
-const nearRhymeUrl string = `https://api.datamuse.com/words?rel_nry=`
 const baseDatamuseUrl string = `https://api.datamuse.com/words`
-const synonymsUrl string = `https://api.datamuse.com/words?ml=`
 
-func getSynonyms(str string) ([]string, []string) {
-	result := validateJsonApiRequest(synonymsUrl+str, rhymes)
-	if !result.IsJson {
-		fmt.Println(result.e)
-		return nil, nil
+type RhymesData struct {
+	Rhymes   [][][]string `json:"rhymes"`
+	Synonyms [][]string   `json:"synonyms"`
+}
+
+var rhymeGroups [][][]string
+var synonymGroups [][]string
+
+func loadJSONData() error {
+	file, err := os.Open("data.json")
+	if err != nil {
+		return err
+
 	}
-	var smallOut []string
-	var bigOut []string
-	for i, r := range result.result {
-		bigOut = append(bigOut, r.Word)
-		if i < 5 {
-			smallOut = append(smallOut, r.Word)
+	defer file.Close()
+	data, err := io.ReadAll(file)
+	if err != nil {
+		return err
+	}
+
+	var rhymesData RhymesData
+	if err := json.Unmarshal(data, &rhymesData); err != nil {
+		return err
+	}
+
+	rhymeGroups = rhymesData.Rhymes
+	synonymGroups = rhymesData.Synonyms
+	return nil
+}
+
+func findRhymeGroup(word string) []string {
+	order := []int{0, 1, 2, 3, 7, 4, 6, 5, 9}
+	var index int = -1
+	var answer []string
+	var length int
+
+	if len(word) < 9 {
+		length = len(word)
+	} else {
+		length = 0
+	}
+
+	for _, group := range rhymeGroups[length] {
+		x := indexOf(group, word)
+		if x != -1 {
+			if x == 0 {
+				answer = group
+				index = 0
+				break
+			}
+			if index == -1 || index > x {
+				answer = group
+				index = x
+			}
 		}
 	}
-	return smallOut, bigOut
+
+	if index == 0 || index == 1 {
+		return answer
+	}
+
+	for _, num := range order {
+		if num == length {
+			continue
+		}
+		for _, group := range rhymeGroups[num] {
+			x := indexOf(group, word)
+			if x != -1 {
+				if x == 1 {
+					answer = group
+					index = 0
+					break
+				}
+				if index == -1 || index > x {
+					answer = group
+					index = x
+				}
+			}
+		}
+	}
+
+	if index == -1 {
+		return []string{"Didn't find anything"}
+	}
+
+	return answer
+}
+
+func findRhymeAllGroups(word string) [][]string {
+	order := []int{0, 1, 2, 3, 7, 4, 6, 5, 8}
+	var answer [][]string
+
+	for _, num := range order {
+		for _, group := range rhymeGroups[num] {
+			x := indexOf(group, word)
+			if x != -1 {
+				answer = append(answer, group)
+			}
+		}
+	}
+
+	return answer
+}
+
+func deepDoesRhyme(s, w string) bool {
+	sRhymes := findRhymeAllGroups(s)
+	wRhymes := findRhymeAllGroups(w)
+	if len(sRhymes) > 0 {
+		for _, group := range sRhymes {
+			for _, word := range group {
+				if doesRhyme(w, word) {
+					return true
+				}
+			}
+		}
+	}
+	if len(wRhymes) > 0 {
+		for _, group := range wRhymes {
+			for _, word := range group {
+				if doesRhyme(s, word) {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+func doesRhyme(s, w string) bool {
+	if s == w {
+		return true
+	}
+	sRhymes := findRhymeAllGroups(s)
+
+	if len(sRhymes) == 1 && sRhymes[0][0] == "Didn't find anything" {
+		wRhymes := findRhymeAllGroups(w)
+		for _, group := range wRhymes {
+			for _, rhymingWord := range group {
+				if rhymingWord == s {
+					return true
+				}
+			}
+		}
+		return false
+	}
+
+	for _, group := range sRhymes {
+		for _, rhymingWord := range group {
+			if rhymingWord == w {
+				return true
+			}
+		}
+	}
+	wRhymes := findRhymeAllGroups(w)
+
+	if len(wRhymes) == 1 && wRhymes[0][0] == "Didn't find anything" {
+		return false
+	}
+	for _, group := range wRhymes {
+		for _, rhymingWord := range group {
+			if rhymingWord == s {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func indexOf(slice []string, target string) int {
+	for i, element := range slice {
+		if element == target {
+			return i
+		}
+	}
+	return -1
+}
+
+func CountWordSyllables(w string) int {
+	w = strings.ToLower(w)
+	fmt.Println(w)
+	// Handle exceptions
+	twoSyllable := []string{"coapt", "coed", "coinci", "colonel", "cafe", "scotia"}
+	if len(w) <= 3 || w == "preach" || w == "preyed" {
+		return 1
+	}
+	if contains(twoSyllable, w) {
+		return 2
+	}
+	if w == "serious" || w == "worcestershire" || w == "alias" || w == "acacia" {
+		return 3
+	}
+	if w == "epitome" || w == "hyperbole" {
+		return 4
+	}
+
+	regex := []*regexp.Regexp{
+		regexp.MustCompile(`[aeiouy]{1,}`),
+		regexp.MustCompile(`^(?:mc)`),
+		regexp.MustCompile(`^(?:tri)[aeiouy]`),
+		regexp.MustCompile(`^(?:bi)[aeiouy]`),
+		regexp.MustCompile(`^(?:pre)[aeiouy]`),
+		regexp.MustCompile(`[^tc](?:ian)$`),
+		regexp.MustCompile(`[aeiou][^aeiouy]e$`),
+		regexp.MustCompile(`[aeiou][^aeiouy]es$`),
+		regexp.MustCompile(`i[ao]$`),
+		regexp.MustCompile(`[aeiouy]ing$`),
+	}
+
+	// Base case
+	holdVowels := regex[0].FindAllString(w, -1) // count vowel groups
+	fmt.Println(holdVowels)
+	count := len(holdVowels)
+	if count == 0 {
+		return 0
+	}
+	if regex[1].MatchString(w) || regex[2].MatchString(w) || regex[3].MatchString(w) || regex[4].MatchString(w) {
+		count++ // Handle syllabic prefixes
+	}
+	if regex[5].MatchString(w) {
+		count++ // Handle ian suffix
+	}
+	if regex[6].MatchString(w) || regex[7].MatchString(w) {
+		count-- // Handle [vowel]_e(s)
+	}
+	if regex[8].MatchString(w) {
+		count++ // Handle i[ao]
+	}
+	if regex[9].MatchString(w) {
+		count++ // Handle vowel+ing
+	}
+	return count
+}
+
+func contains(arr []string, str string) bool {
+	for _, a := range arr {
+		if a == str {
+			return true
+		}
+	}
+	return false
+}
+func localSyllables(str string) int {
+	hold := strings.Split(str, " ")
+	sum := 0
+	if hold != nil {
+		for _, word := range hold {
+			sum += CountWordSyllables(removePunctuationFromWord(word))
+		}
+	}
+	return sum
 }
 func syllableCount(str string) int {
 	apiURL := fmt.Sprintf("%s?sp=%s&md=s", baseDatamuseUrl, str)
@@ -56,126 +281,30 @@ func syllableCount(str string) int {
 	res, e := http.Get(apiURL)
 	if e != nil {
 		fmt.Println(e)
-		return -1
+		return localSyllables(str)
 
 	}
 	defer res.Body.Close()
 	body, e := io.ReadAll(res.Body)
 	if e != nil {
 		fmt.Println(e)
-		return -1
+		return localSyllables(str)
 	}
 	var count []struct {
 		Syllables int `json:"numSyllables"`
 	}
 	if e := json.Unmarshal(body, &count); e != nil {
 		fmt.Println(e)
-		return -1
+		return localSyllables(str)
 	}
 	if len(count) <= 0 {
-		return -200
+		fmt.Println(count)
+		return localSyllables(str)
 	}
+	fmt.Println(count, "from api")
 	return count[0].Syllables
 }
 
-func validateJsonApiRequest(url string, structure JsonReturn) JsonOrError {
-	res, e := http.Get(url)
-	if e != nil {
-
-		return JsonOrError{false, nil, e}
-	}
-	defer res.Body.Close()
-	body, e := io.ReadAll(res.Body)
-	if e != nil {
-		return JsonOrError{false, nil, e}
-	}
-
-	var words []struct {
-		Word string `json:"word"`
-	}
-
-	switch structure {
-	case rhymes:
-		if e := json.Unmarshal(body, &words); e != nil {
-			return JsonOrError{false, nil, e}
-		}
-
-		return JsonOrError{true, words, nil}
-
-	default:
-		return JsonOrError{false, nil, nil}
-	}
-}
-func doesRhyme(a string, b string) bool {
-
-	wordA := removePunctuationFromWord(a)
-	wordB := removePunctuationFromWord(b)
-	if wordA == wordB {
-		return true
-	}
-	resulta := validateJsonApiRequest(rhymeUrl+wordA, rhymes)
-	if !resulta.IsJson {
-		resultb := validateJsonApiRequest(rhymeUrl+wordB, rhymes)
-		if !resultb.IsJson {
-			fmt.Print(resulta.e, resultb.e)
-			return false
-		}
-		for _, w := range resultb.result {
-			if w.Word == wordA {
-				return true
-			}
-		}
-		fmt.Print(resulta.e)
-		return false
-	}
-	for _, w := range resulta.result {
-		if w.Word == wordB {
-			return true
-		}
-	}
-	resultb := validateJsonApiRequest(rhymeUrl+wordB, rhymes)
-	if !resultb.IsJson {
-		fmt.Println(resultb.e)
-		return false
-	}
-	for _, w := range resultb.result {
-		if w.Word == wordB {
-			return true
-		}
-	}
-	resulta = validateJsonApiRequest(nearRhymeUrl+wordA, rhymes)
-	if !resulta.IsJson {
-		resultb = validateJsonApiRequest(nearRhymeUrl+wordB, rhymes)
-		if !resultb.IsJson {
-			fmt.Print(resulta.e, resultb.e)
-			return false
-		}
-		for _, w := range resultb.result {
-			if w.Word == wordA {
-				return true
-			}
-		}
-		fmt.Print(resulta.e)
-		return false
-	}
-	for _, w := range resulta.result {
-		if w.Word == wordB {
-			return true
-		}
-	}
-	resultb = validateJsonApiRequest(nearRhymeUrl+wordB, rhymes)
-	if !resultb.IsJson {
-		fmt.Println(resultb.e)
-		return false
-	}
-	for _, w := range resultb.result {
-		if w.Word == wordB {
-			return true
-		}
-	}
-	return false
-
-}
 func intermingleRhymes(words []string) [][]string {
 	uniqueStrings := make(map[string]struct{})
 	var result []string
@@ -212,85 +341,6 @@ func rhymeGroupsToString(t [][]string) string {
 		result += "\n"
 	}
 	return result
-}
-func getRhymes(str string) ([]string, []string) {
-	var smallOut []string
-	var bigOut []string
-	result := validateJsonApiRequest(rhymeUrl+str, rhymes)
-	if result.IsJson {
-		if len(result.result) > 9 {
-			for i, w := range result.result {
-				bigOut = append(bigOut, w.Word)
-				if i < 5 {
-					smallOut = append(smallOut, w.Word)
-				}
-			}
-			return smallOut, bigOut
-		} else if len(result.result) > 5 {
-			for i, w := range result.result {
-				bigOut = append(bigOut, w.Word)
-				if i < 5 {
-					smallOut = append(smallOut, w.Word)
-				}
-			}
-
-			result = validateJsonApiRequest(nearRhymeUrl+str, rhymes)
-			if result.IsJson {
-				for _, w := range result.result {
-					bigOut = append(bigOut, w.Word)
-				}
-				return smallOut, bigOut
-			}
-
-		} else {
-			for _, w := range result.result {
-				temp := w.Word
-				bigOut = append(bigOut, temp)
-				smallOut = append(smallOut, temp)
-
-			}
-			result = validateJsonApiRequest(nearRhymeUrl+str, rhymes)
-			if result.IsJson {
-				for i, w := range result.result {
-					bigOut = append(bigOut, w.Word)
-					if i < 5 {
-						smallOut = append(smallOut, w.Word)
-					}
-				}
-				return smallOut, bigOut
-			}
-
-		}
-	}
-	result = validateJsonApiRequest(nearRhymeUrl+str, rhymes)
-	if !result.IsJson {
-		return nil, nil
-	}
-	if len(result.result) < 5 {
-		for _, w := range result.result {
-			bigOut = append(bigOut, w.Word)
-			smallOut = append(smallOut, w.Word)
-
-		}
-
-	} else if len(result.result) < 9 {
-		for i, w := range result.result {
-			bigOut = append(bigOut, w.Word)
-			if i < 5 {
-				smallOut = append(smallOut, w.Word)
-			}
-		}
-
-	} else {
-		for _, w := range result.result {
-			temp := w.Word
-			bigOut = append(bigOut, temp)
-			smallOut = append(smallOut, temp)
-
-		}
-
-	}
-	return smallOut, bigOut
 }
 
 func splitString(input string) []Stanza {
@@ -331,6 +381,7 @@ func removePunctuationFromWord(word string) string {
 		}
 		return r
 	}
+
 	return strings.Map(removePunctuationFromWordEnd, word)
 }
 func setEndWords(stanza Stanza) []string {
@@ -347,9 +398,9 @@ func setEndWords(stanza Stanza) []string {
 func getAllEndWords(stanzas []Stanza) []string { // formatting is fort testing purposes
 	var output []string
 	for _, stanza := range stanzas {
-		for _, word := range stanza.endWords {
-			output = append(output, word)
-		}
+
+		output = append(output, stanza.endWords...)
+
 	}
 	return output
 }

@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Web Sestina Drafter | Shadow's Den</title>
+
+        <link rel="stylesheet" href="/static/css/styles.css">
+        <link rel="icon" type="image/x-icon" href="/images/favicon.jpg">
+    </head>
+    <body>
+
+        <div class = "stanza-background-container">
+            <header>
+                <h1>Web Sestina Drafter</h1>
+    
+            </header>
+         
+                <div class = "explainer">
+                    <div>
+                        <h2>What is a Sestina?</h2>
+                        <p><i>
+                            A sestina is a complex poetic form consisting of six stanzas, 
+                            each with six lines, and a concluding tercet. 
+                            It involves a pattern of repetitive end-words throughout the poem, 
+                            creating an intricate interplay of repetition and variation.
+                        </i> </p>
+                    </div>
+                    <div>
+                        <h2>That sounds cool! But isn't it hard?</h2>
+                        <p><i>
+                            The sestina drafter helps you tame the poem's winding nature, 
+                            crafting beauty with ease. Start your draft and witness the end words preview future lines, 
+                            freeing you to consider the poem, not the swirling form. 
+                            Simplify the process, unleash your creativity, 
+                            and embrace the beauty of the sestina.
+                        </i> </p>
+                        <div class = "button-holder">
+
+                            <input type="checkbox" onclick="endWordsToggler()" checked> Toggle automatic End Words</input>
+                            <br><br>
+                        </div> 
+                    </div>
+                </div>
+                <div class = "stanza" id = "stanza">
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 1"
+                    oninput = "handleChange(this), setEndWords()"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 2"
+                    oninput = "handleChange(this), setEndWords()"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 3"
+                    oninput = "handleChange(this), setEndWords()"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 4"
+                    oninput = "handleChange(this), setEndWords()"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 5"
+                    oninput = "handleChange(this), setEndWords()"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 6"
+                    oninput = "handleChange(this), setEndWords()"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                </div>
+                <div class = "stanza" id = "stanza">
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 6"
+                    placeholder="Ends With Line: 6"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 6)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 1"
+                    oninput = "handleChange(this)"
+                    onchange = 'getEndWords(this, 1)'
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 5"
+                    oninput = "handleChange(this)"
+                    onchange="getEndWords(this, 5)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 2"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 2)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 4"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 4)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 3"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 3)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                </div>
+                <div class = "stanza" id = "stanza">
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 3"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 3)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 6"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 6)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 4"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 4)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 1"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 1)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 2"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 2)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 5"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 5)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                </div>
+                <div class = "stanza" id = "stanza">
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 5"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 5)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 3"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 3)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 2"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 2)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 6"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 6)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 1"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 1)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 4"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 4)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                </div>
+                <div class = "stanza" id = "stanza">
+                    <input 
+                    type = "text"
+                    class = "line"
+                    
+                    placeholder="Ends With Line: 4"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 4)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 5"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 5)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 1"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 1)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 3"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 3)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 6"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 6)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 2"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 2)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                </div>
+                <div class = "stanza" id = "stanza">
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 2"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 2)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 4"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 4)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 6"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 6)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 5"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 5)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 3"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 3)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input 
+                    type = "text"
+                    class = "line"
+                    placeholder="Ends With Line: 1"
+                    oninput = "handleChange(this)"
+                    onchange = "getEndWords(this, 1)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                </div>
+                <div class = "stanza" id = "stanza">
+                    <input placeholder="6, 2"
+                    type = "text"
+                    class = "line"
+                    oninput = "handleChange(this), envoi(this, 6, 2)"  
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input placeholder="1, 4"
+                    type = "text"
+                    class = "line"
+                    oninput = "handleChange(this), envoi(this, 1, 4)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    <input placeholder="5, 3"
+                    type = "text"
+                    class = "line"
+                    oninput = "handleChange(this), envoi(this, 5, 3)"
+                    name = "line"
+                    hx-post="/api-syllables"
+                    hx-target="next"
+                    />
+                    <span class="syllable-count"></span><br>
+                    
+                </div>
+                <div class = "button-holder">
+
+                    <button onclick="Copy()" class = "generateButton"> Copy Poem! </button>
+                    <br><br>
+                </div> 
+        </div>
+        <script src = "static\js\main.js">
+        </script>
+    </body>
+</html>
