@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-var indexTemplate = template.Must(template.ParseFiles("templates/index.html"))
+var indexTemplate = template.Must(template.ParseFiles("index.html"))
 var villanelleTemplate = template.Must(template.ParseFiles("templates/villanelle.html"))
 var tankaTemplate = template.Must(template.ParseFiles("templates/tanka.html"))
 var sestinaTemplate = template.Must(template.ParseFiles("templates/sestina.html"))
